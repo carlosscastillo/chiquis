@@ -37,14 +37,31 @@ function buildDB() {
 }
 const DB = () => core.db;
 
+// ---------------- Tema claro / oscuro ----------------
+// 'auto' sigue al sistema del teléfono; 'light' y 'dark' lo fijan solo en este teléfono.
+const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+function getThemePref() { try { return localStorage.getItem('gym.theme') || 'auto'; } catch { return 'auto'; } }
+function isDark() { const t = getThemePref(); return t === 'dark' || (t === 'auto' && darkQuery.matches); }
+function setThemePref(t) {
+  try { localStorage.setItem('gym.theme', t); } catch {}
+  if (t === 'auto') delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = t;
+  updateThemeColor();
+}
+function updateThemeColor() {
+  const brand = document.querySelector('.picker.brand');
+  document.querySelector('meta[name=theme-color]').setAttribute('content', brand ? '#FB6C64' : isDark() ? '#111317' : '#F7F3EE');
+}
+setThemePref(getThemePref());
+darkQuery.addEventListener('change', () => { updateThemeColor(); render(); });
+
 function applyTheme() {
   const u = USERS[state.user] || Object.values(USERS)[0];
   const p = USERS[L.other(u.id)];
   const r = document.documentElement.style;
   r.setProperty('--acc', u.color);
-  r.setProperty('--acc-soft', u.soft);
   r.setProperty('--partner', p.color);
-  document.querySelector('meta[name=theme-color]').setAttribute('content', '#111317');
+  updateThemeColor();
 }
 
 // ---------------- Render principal ----------------
@@ -102,6 +119,7 @@ function header() {
 }
 
 function renderSplash() {
+  setTimeout(updateThemeColor);
   $('#app').innerHTML = `<div class="picker brand center"><img class="logo" src="icono-v2-512.png" alt="" width="112" height="112"><h1 style="font-size:40px">Chiquis</h1><p class="muted">Cargando…</p></div>`;
 }
 
@@ -109,6 +127,7 @@ function renderLogin() {
   const st = core.store;
   const denied = st.status === 'denied';
   document.documentElement.style.setProperty('--acc', '#FF7A3D');
+  setTimeout(updateThemeColor);
   $('#app').innerHTML = `<div class="picker brand">
     <div class="center stack" style="gap:6px;margin-bottom:10px">
       <img class="logo" src="icono-v2-512.png" alt="" width="112" height="112">
@@ -125,6 +144,7 @@ function renderLogin() {
 
 function renderPicker() {
   document.documentElement.style.setProperty('--acc', '#FF7A3D');
+  setTimeout(updateThemeColor);
   $('#app').innerHTML = `<div class="picker brand">
     <div class="center stack" style="gap:6px;margin-bottom:10px">
       <img class="logo" src="icono-v2-512.png" alt="" width="112" height="112">
@@ -519,6 +539,11 @@ function openSettings() {
     <div class="row between"><h2>Ajustes</h2><button class="icon-btn" data-act="modal-close" aria-label="Cerrar">${icon('x')}</button></div>
     ${isCloud() ? '' : `<button class="btn block" data-act="switch-user">Cambiar a ${esc(nameOf(p))}</button>`}
     <div class="stack" style="gap:8px">
+      <b>Apariencia</b>
+      <div class="seg">${[['auto', 'Automático'], ['light', 'Claro'], ['dark', 'Oscuro']].map(([k, l]) => `<button class="${getThemePref() === k ? 'on' : ''}" data-act="theme" data-v="${k}">${l}</button>`).join('')}</div>
+      <p class="faint small">Automático usa el mismo tema que tu celular. Se guarda solo en este teléfono.</p>
+    </div>
+    <div class="stack" style="gap:8px">
       <b>Qué puede ver ${esc(nameOf(p))}</b>
       ${share.map(([k, l]) => `<label class="opt"><input type="checkbox" data-share="${k}" ${st.share[k] ? 'checked' : ''} style="width:22px;height:22px;accent-color:var(--acc)"><span class="grow">${l}</span></label>`).join('')}
       <p class="faint small">Las fotos nunca se comparten: se quedan en tu teléfono.</p>
@@ -640,6 +665,7 @@ const actions = {
     saveSettings(me(), { goals }); closeModal(); toast('Metas guardadas'); render();
   },
   export: exportBackup,
+  theme: el => { setThemePref(el.dataset.v); render(); openSettings(); },
   ...viewActions,
 };
 

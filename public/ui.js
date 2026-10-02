@@ -95,15 +95,15 @@ export function lineChart(series, { height = 220, unit = '', invert = false } = 
   const Y = v => invert ? T + (v - y0) / (y1 - y0) * (H - T - B) : H - B - (v - y0) / (y1 - y0) * (H - T - B);
   let g = '';
   for (let v = y0; v <= y1 + 1e-9; v += step) {
-    g += `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" stroke="#2E333C" stroke-width="1"/>`;
-    g += `<text x="${L - 6}" y="${Y(v) + 4}" text-anchor="end" font-size="10" fill="#6F7782">${fmtKg(Math.round(v * 10) / 10)}</text>`;
+    g += `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" style="stroke:var(--line)" stroke-width="1"/>`;
+    g += `<text x="${L - 6}" y="${Y(v) + 4}" text-anchor="end" font-size="10" style="fill:var(--faint)">${fmtKg(Math.round(v * 10) / 10)}</text>`;
   }
   // etiquetas de fecha (máx 4)
   const span = x1 - x0, nT = 4;
   for (let i = 0; i <= nT; i++) {
     const t = x0 + span * i / nT, d = new Date(t);
     const anchor = i === 0 ? 'start' : i === nT ? 'end' : 'middle';
-    g += `<text x="${X(t)}" y="${H - 6}" text-anchor="${anchor}" font-size="10" fill="#6F7782">${d.getDate()} ${MESES_CORTOS[d.getMonth()]}</text>`;
+    g += `<text x="${X(t)}" y="${H - 6}" text-anchor="${anchor}" font-size="10" style="fill:var(--faint)">${d.getDate()} ${MESES_CORTOS[d.getMonth()]}</text>`;
   }
   let marks = '', hits = '';
   for (const s of series) {
@@ -115,7 +115,7 @@ export function lineChart(series, { height = 220, unit = '', invert = false } = 
     if (s.dots !== false) {
       for (const p of ps) {
         const cx = X(parseD(p.d).getTime()), cy = Y(p.y);
-        marks += `<circle cx="${cx}" cy="${cy}" r="${s.r || 4.5}" fill="${s.color}" stroke="#1B1E24" stroke-width="2" opacity="${s.opacity ?? 1}"/>`;
+        marks += `<circle cx="${cx}" cy="${cy}" r="${s.r || 4.5}" fill="${s.color}" style="stroke:var(--card)" stroke-width="2" opacity="${s.opacity ?? 1}"/>`;
       }
     }
     for (const p of ps) {

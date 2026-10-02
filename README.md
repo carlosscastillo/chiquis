@@ -43,6 +43,8 @@ Funciona sin internet en el gimnasio y se sincroniza en tiempo real entre ambos 
 - Stickers y mensajes, frases que le aparecen al otro al empezar o terminar su sesión, retos de pareja semanales y 21 logros desbloqueables.
 - Cada quien decide qué parte de su progreso puede ver el otro.
 
+**Apariencia** — tema claro y oscuro; por defecto sigue el tema del teléfono.
+
 ---
 
 ## Tecnología
