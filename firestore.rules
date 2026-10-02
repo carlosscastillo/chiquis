@@ -1,0 +1,85 @@
+rules_version = '2';
+// ============================================================
+//  Reglas de seguridad de Chiquis
+//  - Solo entran las cuentas de Google registradas en gym_miembros
+//    (documento con id = correo en minúsculas, campo user = "a" o "b").
+//    Esa colección se llena a mano en la consola: nadie puede escribirla
+//    desde la app, y los correos no están en el código.
+//  - Cada quien solo crea, cambia o borra SUS propios datos.
+// ============================================================
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function correo() { return request.auth.token.email.lower(); }
+    function rutaMiembro() { return /databases/$(database)/documents/gym_miembros/$(correo()); }
+    function miembro() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && exists(rutaMiembro());
+    }
+    function quien() { return get(rutaMiembro()).data.user; }
+    function esDuenoNuevo(campo) { return request.resource.data[campo] == quien(); }
+    function esDuenoActual(campo) { return resource.data[campo] == quien(); }
+    function tamanoOk() { return request.resource.data.size() < 40; }
+
+    // Cada quien puede consultar SOLO su propio registro de miembro
+    match /gym_miembros/{email} {
+      allow read: if request.auth != null && email == correo();
+      allow write: if false;
+    }
+
+    // Leer datos: solo miembros (qué ve cada quien del otro se controla en la app)
+    match /{coleccion}/{doc} {
+      allow read: if miembro() && coleccion.matches('gym_.*') && coleccion != 'gym_miembros';
+    }
+
+    // Sesiones, peso, medidas y hábitos: cada quien lo suyo
+    match /gym_sessions/{id} {
+      allow create: if miembro() && esDuenoNuevo('user') && tamanoOk();
+      allow update: if miembro() && esDuenoActual('user') && esDuenoNuevo('user') && tamanoOk();
+      allow delete: if miembro() && esDuenoActual('user');
+    }
+    match /gym_body/{id} {
+      allow create: if miembro() && esDuenoNuevo('user') && request.resource.data.kg is number;
+      allow update: if miembro() && esDuenoActual('user') && esDuenoNuevo('user') && request.resource.data.kg is number;
+      allow delete: if miembro() && esDuenoActual('user');
+    }
+    match /gym_measures/{id} {
+      allow create: if miembro() && esDuenoNuevo('user') && tamanoOk();
+      allow update: if miembro() && esDuenoActual('user') && esDuenoNuevo('user') && tamanoOk();
+      allow delete: if miembro() && esDuenoActual('user');
+    }
+    match /gym_habits/{id} {
+      allow create: if miembro() && esDuenoNuevo('user') && id == quien() + '_' + request.resource.data.date && tamanoOk();
+      allow update: if miembro() && esDuenoActual('user') && esDuenoNuevo('user') && tamanoOk();
+    }
+
+    // Mensajes y stickers: solo los mandas a tu nombre;
+    // quien los recibe solo puede marcarlos como vistos.
+    match /gym_messages/{id} {
+      allow create: if miembro() && esDuenoNuevo('from') && request.resource.data.to != quien()
+        && request.resource.data.read == false && tamanoOk()
+        && (!('text' in request.resource.data) || request.resource.data.text.size() <= 300);
+      allow update: if miembro() && resource.data.to == quien()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
+      allow delete: if miembro() && esDuenoActual('from');
+    }
+
+    // Frases para el otro
+    match /gym_phrases/{id} {
+      allow create: if miembro() && esDuenoNuevo('from') && request.resource.data.text is string
+        && request.resource.data.text.size() <= 200 && tamanoOk();
+      allow delete: if miembro() && esDuenoActual('from');
+    }
+
+    // Reto de la semana: lo eligen los dos
+    match /gym_challenges/{semana} {
+      allow create, update: if miembro() && request.resource.data.tpl is string && tamanoOk();
+    }
+
+    // Ajustes: cada quien los suyos
+    match /gym_settings/{usuario} {
+      allow create, update: if miembro() && usuario == quien() && tamanoOk();
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "chiquis",
+  "version": "2.0.0",
+  "private": true,
+  "description": "PWA para entrenar en pareja: rutina del día, progresión, récords, hábitos y motivación. Vanilla JS + Firebase.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "build:firebase": "esbuild scripts/firebase-entry.js --bundle --format=esm --minify --outfile=public/firebase.js",
+    "serve": "npx --yes http-server public -p 8080 -c-1",
+    "deploy": "firebase deploy --only hosting,firestore:rules"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.0",
+    "firebase": "^12.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}

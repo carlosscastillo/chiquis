@@ -1,0 +1,12 @@
+# Configuración y datos personales (nunca se suben)
+public/firebase-config.js
+public/perfiles.js
+.firebaserc
+.firebase/
+
+# Dependencias y basura
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+*.zip
