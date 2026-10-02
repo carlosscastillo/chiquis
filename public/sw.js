@@ -1,6 +1,6 @@
 // Guarda la app en el teléfono para que abra sin internet.
 // Si cambias algún archivo, sube también este con el número de versión aumentado.
-const CACHE = 'chiquis-v4';
+const CACHE = 'chiquis-v5';
 const ARCHIVOS = [
   './', './index.html', './styles.css', './app.js', './views.js', './core.js', './ui.js', './logic.js', './store.js',
   './data.js', './sanitize.js', './icons.js', './firebase.js', './perfiles.example.js', './manifest.json',
