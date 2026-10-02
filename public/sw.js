@@ -1,10 +1,10 @@
 // Guarda la app en el teléfono para que abra sin internet.
 // Si cambias algún archivo, sube también este con el número de versión aumentado.
-const CACHE = 'chiquis-v5';
+const CACHE = 'chiquis-v6';
 const ARCHIVOS = [
   './', './index.html', './styles.css', './app.js', './views.js', './core.js', './ui.js', './logic.js', './store.js',
   './data.js', './sanitize.js', './icons.js', './firebase.js', './perfiles.example.js', './manifest.json',
-  './icon-192.png', './icon-512.png', './icon-maskable.png',
+  './icono-v2-192.png', './icono-v2-512.png', './icono-v2-maskable.png',
   './fonts/oswald-latin-600-normal.woff2', './fonts/rubik-latin-400-normal.woff2',
   './fonts/rubik-latin-500-normal.woff2', './fonts/rubik-latin-700-normal.woff2',
 ];

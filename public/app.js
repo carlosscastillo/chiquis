@@ -102,7 +102,7 @@ function header() {
 }
 
 function renderSplash() {
-  $('#app').innerHTML = `<div class="picker brand center"><img class="logo" src="icon-512.png" alt="" width="112" height="112"><h1 style="font-size:40px">Chiquis</h1><p class="muted">Cargando…</p></div>`;
+  $('#app').innerHTML = `<div class="picker brand center"><img class="logo" src="icono-v2-512.png" alt="" width="112" height="112"><h1 style="font-size:40px">Chiquis</h1><p class="muted">Cargando…</p></div>`;
 }
 
 function renderLogin() {
@@ -111,7 +111,7 @@ function renderLogin() {
   document.documentElement.style.setProperty('--acc', '#FF7A3D');
   $('#app').innerHTML = `<div class="picker brand">
     <div class="center stack" style="gap:6px;margin-bottom:10px">
-      <img class="logo" src="icon-512.png" alt="" width="112" height="112">
+      <img class="logo" src="icono-v2-512.png" alt="" width="112" height="112">
       <h1 style="font-size:44px">Chiquis</h1>
       <p class="muted">${denied ? 'Esta cuenta no tiene acceso' : 'Entra con tu cuenta de Google'}</p>
     </div>
@@ -127,7 +127,7 @@ function renderPicker() {
   document.documentElement.style.setProperty('--acc', '#FF7A3D');
   $('#app').innerHTML = `<div class="picker brand">
     <div class="center stack" style="gap:6px;margin-bottom:10px">
-      <img class="logo" src="icon-512.png" alt="" width="112" height="112">
+      <img class="logo" src="icono-v2-512.png" alt="" width="112" height="112">
       <h1 style="font-size:44px">Chiquis</h1>
       <p class="muted">¿Quién eres?</p>
     </div>
